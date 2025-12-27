@@ -8,6 +8,11 @@ interface SettingsState {
     used: number;
     total: number;
   };
+  credits: {
+    usage: number;
+    limit: number | null;
+    is_free_tier: boolean;
+  } | null;
   isSettingsOpen: boolean;
 }
 
@@ -19,6 +24,7 @@ const initialState: SettingsState = {
     used: 1232, // Initial fallback
     total: 12000,
   },
+  credits: null,
   isSettingsOpen: false,
 };
 
@@ -61,6 +67,9 @@ const settingsSlice = createSlice({
     ) => {
       state.tokenUsage = action.payload;
     },
+    setCredits: (state, action: PayloadAction<SettingsState["credits"]>) => {
+      state.credits = action.payload;
+    },
     initializeSettings: (state) => {
       if (typeof window !== "undefined") {
         const storedKey = localStorage.getItem("s_image_api_key");
@@ -102,5 +111,6 @@ export const {
   setSettingsOpen,
   initializeSettings,
   setTokenUsage,
+  setCredits,
 } = settingsSlice.actions;
 export default settingsSlice.reducer;

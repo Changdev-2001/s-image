@@ -20,7 +20,7 @@ export default function Home() {
 
   const { generateImage, imageUrl, loading, error } = useGenerateImage();
   const dispatch = useDispatch();
-  const { apiKey } = useSelector((state: RootState) => state.settings);
+  const { apiKey, credits } = useSelector((state: RootState) => state.settings);
   const [notification, setNotification] = useState<{
     visible: boolean;
     message: string;
@@ -240,6 +240,11 @@ export default function Home() {
           <span className="flex items-center gap-1">
             Created By Changdev Hirade
           </span>
+          {credits && (
+            <span className="text-xs text-green-600 dark:text-green-400 font-semibold bg-green-50 dark:bg-green-900/20 px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800">
+              Credits: ${Number(credits.usage).toFixed(2)}
+            </span>
+          )}
         </div>
         <div>&copy; 2024 S-Image • v1.0.4</div>
       </footer>
