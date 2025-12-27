@@ -19,6 +19,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/diamond.png" type="image/png" />
+        <link rel="shortcut icon" href="/diamond.png" type="image/png" />
+        <link
+          rel="icon"
+          href="/icon-192.png"
+          sizes="192x192"
+          type="image/png"
+        />
+        <link
+          rel="icon"
+          href="/icon-512.png"
+          sizes="512x512"
+          type="image/png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-icon-180.png"
+        />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body
         className={cn(
           inter.className,

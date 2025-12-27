@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { setTheme, setSettingsOpen } from "@/store/settingsSlice";
@@ -19,12 +21,14 @@ export default function Navbar() {
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
-            S Image
-          </span>
+          <Image
+            src="/logo.png"
+            alt="S-Image Logo"
+            width={110}
+            height={41}
+            className="object-contain h-10 w-auto"
+            priority
+          />
         </div>
 
         {/* Right Actions */}
