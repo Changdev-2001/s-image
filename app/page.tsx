@@ -5,25 +5,22 @@ import Image from "next/image";
 import { useGenerateImage } from "@/hooks/useGenerateImage";
 import Navbar from "@/components/Navbar";
 import SettingsModal from "@/components/SettingsModal";
-import ModelSelector from "@/components/ModelSelector";
-import Notification from "@/components/Notification";
+import AppNotification from "@/components/AppNotification";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Download,
-  Image as ImageIcon,
-  Wand2,
-  AlertTriangle,
-} from "lucide-react";
+import { Download, Image as ImageIcon } from "lucide-react";
+import Sidebar from "@/components/Sidebar/Sidebar";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { setSettingsOpen } from "@/store/settingsSlice";
 
 export default function Home() {
+  const [mode, setMode] = useState<"create" | "enhance">("create");
   const [prompt, setPrompt] = useState("");
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+
   const { generateImage, imageUrl, loading, error } = useGenerateImage();
   const dispatch = useDispatch();
   const { apiKey } = useSelector((state: RootState) => state.settings);
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [notification, setNotification] = useState<{
     visible: boolean;
     message: string;
@@ -43,7 +40,31 @@ export default function Home() {
       return;
     }
     setNotification((prev) => ({ ...prev, visible: false })); // Clear previous errors
-    await generateImage(prompt);
+
+    if (mode === "enhance" && !uploadedImage) {
+      setNotification({
+        visible: true,
+        message: "Please upload an image to enhance.",
+        type: "warning",
+      });
+      return;
+    }
+
+    await generateImage(
+      prompt,
+      mode === "enhance" && uploadedImage ? uploadedImage : undefined
+    );
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleDownload = () => {
@@ -84,7 +105,7 @@ export default function Home() {
       <Navbar />
       <SettingsModal />
 
-      <Notification
+      <AppNotification
         message={notification.message}
         type={notification.type}
         isVisible={notification.visible}
@@ -93,64 +114,17 @@ export default function Home() {
 
       <main className="flex-1 flex flex-col md:flex-row overflow-hidden relative">
         {/* LEFT SIDEBAR: Controls & Input */}
-        <section className="w-full md:w-[400px] border-r border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl p-6 flex flex-col z-10">
-          <div className="flex-1 space-y-6">
-            <header className="space-y-2">
-              <div className="flex items-center text-lg gap-2 text-blue-600 dark:text-blue-400 font-bold  tracking-widest uppercase">
-                Imagine | Describe | Create
-              </div>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Turn your wildest imaginations into breathtaking reality with
-                our state-of-the-art AI.
-              </p>
-            </header>
-
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Prompt
-                </label>
-                <div className="relative group">
-                  <textarea
-                    ref={textAreaRef}
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="A neon-lit cyberpunk city in the rain..."
-                    className="w-full p-4 pb-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none min-h-[140px] md:min-h-[200px] shadow-sm overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                    disabled={loading}
-                  />
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <span className="text-[10px] text-slate-400 font-mono">
-                      {prompt.length} chars
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-6 border-t border-slate-200 dark:border-slate-800 space-y-3">
-            <div className="flex items-center gap-3 h-14">
-              {" "}
-              {/* Added h-14 and items-center */}
-              <ModelSelector />
-              <button
-                onClick={handleGenerate}
-                disabled={loading || !prompt.trim()}
-                className="flex-1 h-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 text-white rounded-2xl font-bold shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 group active:scale-[0.98]"
-              >
-                {loading ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Wand2 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                    Generate Image
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </section>
+        <Sidebar
+          mode={mode}
+          setMode={setMode}
+          prompt={prompt}
+          setPrompt={setPrompt}
+          uploadedImage={uploadedImage}
+          setUploadedImage={setUploadedImage}
+          handleImageUpload={handleImageUpload}
+          handleGenerate={handleGenerate}
+          loading={loading}
+        />
 
         {/* RIGHT CONTENT: Canvas Area */}
         <section className="flex-1 bg-slate-50 dark:bg-gray-950 relative overflow-y-auto">

@@ -14,7 +14,7 @@ interface NotificationProps {
   autoClose?: number;
 }
 
-export default function Notification({
+export default function AppNotification({
   message,
   type = "info",
   isVisible,

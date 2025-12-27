@@ -9,7 +9,7 @@ interface GenerateImageResponse {
 }
 
 interface UseGenerateImageReturn {
-  generateImage: (prompt: string) => Promise<void>;
+  generateImage: (prompt: string, imageData?: string) => Promise<void>;
   imageUrl: string | null;
   loading: boolean;
   error: string | null;
@@ -26,7 +26,7 @@ export const useGenerateImage = (): UseGenerateImageReturn => {
   const { apiKey, model } = useSelector((state: RootState) => state.settings);
 
   const generateImage = useCallback(
-    async (prompt: string) => {
+    async (prompt: string, imageData?: string) => {
       // Validate prompt
       if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
         setError("Please enter a prompt to generate an image.");
@@ -53,6 +53,7 @@ export const useGenerateImage = (): UseGenerateImageReturn => {
           },
           body: JSON.stringify({
             prompt,
+            imageData, // Add imageData to the request body
             apiKey,
             model,
           }),

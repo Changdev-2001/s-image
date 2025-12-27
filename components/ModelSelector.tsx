@@ -19,7 +19,7 @@ export default function ModelSelector() {
   };
 
   return (
-    <div className="relative shrink-0 w-14 h-14">
+    <div className="relative shrink-0 w-12 h-12">
       {/* Trigger Button - Fixed square matching the height of the Generate button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
