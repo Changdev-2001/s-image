@@ -1,5 +1,5 @@
 # S-Image
-
+Demo : https://s-image.vercel.app/
 A modern, responsive Next.js application for generating and enhancing images using OpenRouter's AI models. Featuring a sleek UI with separate modes for creation and enhancement.
 
 ## Features
